@@ -10,3 +10,12 @@
 - data_dictionary.md：データ辞書
 - table_design.md：補足ルール（保存方針・並び順など）
 - er_diagram.drawio / er_diagram.png：ER図
+
+## 設計ステータス
+
+- logs テーブル：確定
+- インデックス設計：確定（MVP）
+- 並び順仕様：確定（sort_priority）
+- 本ドキュメント以降の変更は「実装フェーズでの差分」として扱う
+
+※ 本DDLを変更する場合は、必ず Git 管理下で差分を残すこと
