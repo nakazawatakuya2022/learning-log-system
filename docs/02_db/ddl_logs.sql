@@ -30,14 +30,28 @@ CREATE TABLE logs (
     END
   ) STORED COMMENT '表示優先度（未解決→解決→ナレッジ）',
 
+  -- ===== CHECK 制約 =====
+  CONSTRAINT chk_logs_is_resolved_01
+    CHECK (is_resolved IN (0,1)),
+
+  CONSTRAINT chk_logs_is_knowledge_01
+    CHECK (is_knowledge IN (0,1)),
+
+  CONSTRAINT chk_logs_knowledge_requires_resolved
+    CHECK (is_knowledge = 0 OR is_resolved = 1),
+
   PRIMARY KEY (id),
 
   INDEX idx_logs_priority_occurred_updated
     (sort_priority, occurred_at, updated_at),
+
   INDEX idx_logs_resolved_occurred
     (is_resolved, occurred_at),
+
   INDEX idx_logs_language_occurred
     (language, occurred_at),
+
   INDEX idx_logs_level_occurred
     (level, occurred_at)
+
 ) COMMENT='学習ログ管理テーブル';
