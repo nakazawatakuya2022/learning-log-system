@@ -16,7 +16,7 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: GOHANNODENDO
+      MYSQL_DATABASE: learning_log
       MYSQL_USER: web2511
       MYSQL_PASSWORD: web2511
       MYSQL_ROOT_PASSWORD: rootpass
