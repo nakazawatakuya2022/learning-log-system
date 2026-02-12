@@ -35,3 +35,11 @@ project-root/
 
 ## require 方針
 - `public/index.php` と `public/detail.php` の先頭で `src/config/db.php` を `require` する
+
+公開コード：public
+
+非公開コード：src
+
+環境差分：.envで吸収
+
+env.phpは作らずdb.phpに統合

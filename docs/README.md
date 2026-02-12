@@ -16,3 +16,6 @@
 - docs/04_program/：プログラム設計・ファイル構成
 - docs/05_test/：テスト仕様
 - docs/backup/：DBダンプ置き場（Git管理しない）
+
+## lunguage検索について
+「language検索は（すべて）/（言語なし=NULL）/各言語」を提供する
