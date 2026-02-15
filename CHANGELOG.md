@@ -9,3 +9,6 @@
 ### Notes
 - 設計の正は docs/ 配下で管理
 - 裏ログは Notion に記録
+
+## lunguage検索について
+「language検索は（すべて）/（言語なし=NULL）/各言語」を提供する

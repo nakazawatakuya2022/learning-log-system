@@ -17,5 +17,75 @@
 - docs/05_test/：テスト仕様
 - docs/backup/：DBダンプ置き場（Git管理しない）
 
-## lunguage検索について
-「language検索は（すべて）/（言語なし=NULL）/各言語」を提供する
+# 設計書一覧（Learning Log System）
+
+---
+
+## 00_overview
+
+- システム概要
+- 目的
+- 技術構成
+
+---
+
+## 01_ui
+
+- 画面構成
+- ワイヤーフレーム
+- 画面遷移図
+
+---
+
+## 02_db
+
+- テーブル設計書
+- データ辞書
+- DDL
+- インデックス設計
+
+---
+
+## 03_api_flow
+
+- ルーティング定義
+- I/F定義
+- 処理フロー
+
+---
+
+## 04_program
+
+### バリデーション仕様
+- validation_spec.md
+
+### View/Edit状態仕様
+- view_edit_state_spec.md
+
+### メッセージ一覧
+- message_list.md
+
+### シーケンス図
+- sequence/sequence_uc05_create.md
+- sequence/sequence_uc02_search.md
+- sequence/sequence_uc06_detail.md
+- sequence/sequence_uc08_update.md
+
+---
+
+## 05_test
+
+- テスト観点
+- テストケース
+- 確認ログ
+
+---
+
+## 補足
+
+- 本システムは PRG（Post-Redirect-Get）を採用
+- 1ページ10件固定
+- 並び順：
+  sort_priority ASC,
+  occurred_at DESC,
+  updated_at DESC

@@ -1,45 +1,53 @@
 # ファイル構成図（MVP／最終FIX）
 
-## 方針
-- 画面数＝ファイル数（2画面）
-- 処理（POST）と表示（HTML）は同一ファイル内で完結
-- 共通処理は `require` のみ
-- 環境差（自宅／学校）は `.env` で吸収する
-- `.env` 読み込みは `db.php` に統合する（env.php は作らない）
-
 ## 構成（最小）
 
 project-root/
-├─ public/                       # Web公開（ここだけ公開する想定）
-│  ├─ index.php                  # 一覧表示／登録（GET/POST）
-│  ├─ detail.php                 # 詳細表示／編集／更新（GET/POST）
+├─ public/                          # Web公開（ここだけ公開する想定）
+│  ├─ index.php                     # Controller：一覧/検索（GET）, 登録（POST）
+│  ├─ detail.php                    # Controller：詳細（GET）, 更新（POST）
 │  └─ assets/
 │     ├─ css/
 │     │  └─ app.css
 │     └─ js/
-│        └─ detail.js            # DOM切替のみ
+│        └─ detail.js               # DOM切替のみ
 │
-├─ src/                          # Webから直接アクセスさせない
-│  └─ config/
-│  │  └─ db.php                  # .env読込 + PDO生成（統合）
+├─ views/                           # HTMLテンプレート
+│  ├─ index.php
+│  ├─ detail.php
+│  └─ not_found.php
+│
+├─ src/                             # Webから直接アクセスさせない
+│  ├─ bootstrap.php                 # session/tz/require集約
+│  ├─ config/
+│  │  ├─ env.php                    # .env読込のみ
+│  │  ├─ db.php                     # PDO生成のみ（ERRMODE_EXCEPTION）
+│  │  └─ constants.php              # LANGUAGES / LEVELS
+│  ├─ lib/
+│  │  ├─ helpers.php                # h()
+│  │  ├─ flash.php                  # flash set/get（表示後unset）
+│  │  └─ validation.php             # validate_*（errors配列返却）
+│  ├─ repo/
+│  │  └─ logs_repo.php              # SQL集約
 │  └─ components/
-├─ .env                          # 環境ごとのDB設定（Git管理しない）
-├─ .env.example                  # ひな形（Git管理する）
-├─ .gitignore                    # .env を除外
+│     ├─ header.php                 # doctype〜body開始
+│     ├─ footer.php                 # body閉じ
+│     └─ messages.php               # errors/flash/0件表示
 │
-└─ docs/                         # 設計ドキュメント（省略）
+├─ .env                             # 環境ごとのDB設定（Git管理しない）
+├─ .env.example                     # ひな形（Git管理する）
+├─ .gitignore                       # .env を除外
+└─ docs/                            # 設計ドキュメント
+   └─ ...（省略）
 
-## 学校環境での配置
-- Web公開領域：`public/` の中身のみ配置
-- 非公開領域：`src/` と `.env` を配置（公開領域の外）
+学校環境での配置
 
-## require 方針
-- `public/index.php` と `public/detail.php` の先頭で `src/config/db.php` を `require` する
+Web公開領域：public/ の中身のみ配置
 
-公開コード：public
+非公開領域：src/, views/, .env を配置（公開領域の外）
 
-非公開コード：src
+require 方針
 
-環境差分：.envで吸収
+public側は __DIR__ 固定で src/bootstrap.php を require
 
-env.phpは作らずdb.phpに統合
+require __DIR__ . '/../src/bootstrap.php';
