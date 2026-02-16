@@ -43,7 +43,7 @@ function logs_insert(array $data): int
 
 function logs_update(int $id, array $data): bool
 {
-    // occurred_at は絶対に更新しない
+    
     $sql = "UPDATE logs
             SET language = :language,
                 level = :level,

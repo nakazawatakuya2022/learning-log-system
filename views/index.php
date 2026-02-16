@@ -29,7 +29,7 @@
     <ul>
       <?php foreach ($logs as $row): ?>
         <li>
-          <a href="/detail.php?id=<?= (int)$row['id'] ?>">
+          <a href="./detail.php?id=<?= (int)$row['id'] ?>">
             #<?= (int)$row['id'] ?> <?= h($row['occurred_at']) ?> <?= h($row['title']) ?>
           </a>
           (<?= h($row['language']) ?> / <?= h($row['level']) ?>)

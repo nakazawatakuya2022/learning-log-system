@@ -2,12 +2,12 @@
 <?php if (empty($log)): ?>
   <p>not found</p>
 <?php else: ?>
-  <p><a href="/index.php">← Back</a></p>
+  <p><a href="./index.php">← Back</a></p>
 
   <h1>Detail #<?= (int)$log['id'] ?></h1>
   <p>occurred_at: <strong><?= h((string)$log['occurred_at']) ?></strong>（更新不可）</p>
 
-  <form method="post" action="/detail.php">
+  <form method="post" action="./detail.php">
     <input type="hidden" name="csrf_token" value="<?= h(csrf_token()) ?>">
     <input type="hidden" name="id" value="<?= (int)$log['id'] ?>">
 

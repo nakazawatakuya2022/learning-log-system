@@ -1,6 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
+//bootstrapを読み込む
 require __DIR__ . '/../src/bootstrap.php';
 
 try {
@@ -9,7 +11,6 @@ try {
             http400(['E_BAD_REQUEST']);
         }
 
-        // 最小バリデーション（動けばOK）
         $occurred_at = trim((string)($_POST['occurred_at'] ?? ''));
         $language = trim((string)($_POST['language'] ?? ''));
         $level = trim((string)($_POST['level'] ?? ''));
@@ -50,7 +51,7 @@ try {
         redirect('./index.php'); // PRG
     }
 
-    // GET：一覧
+    
     $logs = logs_find(10, 0);
     render('index', ['logs' => $logs]);
 

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+
 require __DIR__ . '/../src/bootstrap.php';
 
 try {
@@ -52,7 +53,7 @@ try {
             'is_knowledge' => $is_knowledge,
         ]);
 
-        redirect("/detail.php?id={$id}"); // PRG
+        redirect("./detail.php?id={$id}"); // PRG
     }
 
     // GET
