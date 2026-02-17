@@ -1,57 +1,39 @@
 <?php
-
 declare(strict_types=1);
 
-//bootstrapを読み込む
 require __DIR__ . '/src/bootstrap.php';
 
 try {
     if (is_post()) {
+        // CSRF
         if (!csrf_verify($_POST['csrf_token'] ?? null)) {
             http400(['E_BAD_REQUEST']);
         }
 
-        $occurred_at = trim((string)($_POST['occurred_at'] ?? ''));
-        $language = trim((string)($_POST['language'] ?? ''));
-        $level = trim((string)($_POST['level'] ?? ''));
-        $title = trim((string)($_POST['title'] ?? ''));
-        $message = trim((string)($_POST['message'] ?? ''));
-        $solution = trim((string)($_POST['solution'] ?? ''));
-        $is_resolved = isset($_POST['is_resolved']) ? 1 : 0;
-        $is_knowledge = isset($_POST['is_knowledge']) ? 1 : 0;
-
-        $errors = [];
-        if ($occurred_at === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $occurred_at)) $errors[] = 'E_BAD_REQUEST';
-        if ($title === '') $errors[] = 'E_BAD_REQUEST';
-        if ($message === '') $errors[] = 'E_BAD_REQUEST';
+        // 入力の正規化 + バリデーション
+        $input  = log_input_from_post($_POST);
+        $errors = validate_log_create($input);
 
         if (!empty($errors)) {
             http_response_code(400);
+
             $logs = logs_find(10, 0);
             render('index', [
-                'errors' => ['E_BAD_REQUEST'],
-                'logs' => $logs,
-                'old' => $_POST,
+                'errors' => $errors,
+                'logs'   => $logs,
+                'old'    => $_POST, // フォーム復元用（views側が old を使ってるならこのままでOK）
             ]);
             exit;
         }
 
-        $new_id = logs_insert([
-            'occurred_at' => $occurred_at,
-            'language' => $language,
-            'level' => $level,
-            'title' => $title,
-            'message' => $message,
-            'solution' => ($solution === '' ? null : $solution),
-            'is_resolved' => $is_resolved,
-            'is_knowledge' => $is_knowledge,
-        ]);
+        // INSERT
+        $new_id = logs_insert($input);
 
         flash_set('success', "created id={$new_id}");
         redirect('./index.php'); // PRG
     }
 
-    
+    // GET
     $logs = logs_find(10, 0);
     render('index', ['logs' => $logs]);
 

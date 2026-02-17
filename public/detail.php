@@ -1,56 +1,55 @@
 <?php
 declare(strict_types=1);
 
-
 require __DIR__ . '/src/bootstrap.php';
 
 try {
     if (is_post()) {
+        // CSRF
         if (!csrf_verify($_POST['csrf_token'] ?? null)) {
             http400(['E_BAD_REQUEST']);
         }
 
+        // id（POST）
         $id_raw = (string)($_POST['id'] ?? '');
-        if (!ctype_digit($id_raw)) http404();
+        if (!ctype_digit($id_raw)) {
+            http404();
+        }
         $id = (int)$id_raw;
 
+        // 現在データ
         $current = logs_find_by_id($id);
-        if ($current === null) http404();
+        if ($current === null) {
+            http404();
+        }
 
-        $language = trim((string)($_POST['language'] ?? ''));
-        $level = trim((string)($_POST['level'] ?? ''));
-        $title = trim((string)($_POST['title'] ?? ''));
-        $message = trim((string)($_POST['message'] ?? ''));
-        $solution = trim((string)($_POST['solution'] ?? ''));
-        $is_resolved = isset($_POST['is_resolved']) ? 1 : 0;
-        $is_knowledge = isset($_POST['is_knowledge']) ? 1 : 0;
+        // 入力の正規化 + バリデーション（更新用）
+        $input  = log_input_from_post($_POST);
+        $errors = validate_log_update($input);
 
-        if ($title === '' || $message === '') {
+        if (!empty($errors)) {
             http_response_code(400);
+
+            // 画面に入力値を戻す（currentに上書きして表示）
+            $log_for_view = array_merge($current, $input);
+
             render('detail', [
-                'errors' => ['E_BAD_REQUEST'],
-                'log' => array_merge($current, [
-                    'language' => $language,
-                    'level' => $level,
-                    'title' => $title,
-                    'message' => $message,
-                    'solution' => $solution,
-                    'is_resolved' => $is_resolved,
-                    'is_knowledge' => $is_knowledge,
-                ]),
-                'mode' => 'edit',
+                'errors' => $errors,
+                'log'    => $log_for_view,
+                'mode'   => 'edit',
             ]);
             exit;
         }
 
+        // UPDATE（occurred_at は更新対象にしない前提）
         logs_update($id, [
-            'language' => $language,
-            'level' => $level,
-            'title' => $title,
-            'message' => $message,
-            'solution' => ($solution === '' ? null : $solution),
-            'is_resolved' => $is_resolved,
-            'is_knowledge' => $is_knowledge,
+            'language'     => $input['language'],
+            'level'        => $input['level'],
+            'title'        => $input['title'],
+            'message'      => $input['message'],
+            'solution'     => $input['solution'],
+            'is_resolved'  => $input['is_resolved'],
+            'is_knowledge' => $input['is_knowledge'],
         ]);
 
         redirect("./detail.php?id={$id}"); // PRG
@@ -58,15 +57,20 @@ try {
 
     // GET
     $id_raw = (string)($_GET['id'] ?? '');
-    if (!ctype_digit($id_raw)) http404();
+    if (!ctype_digit($id_raw)) {
+        http404();
+    }
     $id = (int)$id_raw;
 
     $log = logs_find_by_id($id);
-    if ($log === null) http404();
+    if ($log === null) {
+        http404();
+    }
 
     render('detail', ['log' => $log, 'mode' => 'view']);
 
 } catch (Throwable $e) {
     http_response_code(500);
-    render('index', ['errors' => ['E_SYSTEM'], 'logs' => []]);
+    // detail画面側で共通メッセージを出せるならこちらが自然
+    render('detail', ['errors' => ['E_SYSTEM'], 'log' => [], 'mode' => 'view']);
 }
