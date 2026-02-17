@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 //bootstrapを読み込む
-require __DIR__ . '/../src/bootstrap.php';
+require __DIR__ . '/src/bootstrap.php';
 
 try {
     if (is_post()) {
