@@ -31,11 +31,19 @@ function http404(): void
     exit;
 }
 
-function render(string $view, array $vars = []): void
+function render(string $view, array $params = []): void
 {
-    extract($vars, EXTR_SKIP);
-    require __DIR__ . "/../components/header.php";
-    require __DIR__ . "/../components/messages.php";
-    require __DIR__ . "/../../views/{$view}.php";
-    require __DIR__ . "/../components/footer.php";
+    extract($params, EXTR_SKIP);
+
+    // helpers.php は src/lib/helpers.php
+    // views は src/views/
+    $path = __DIR__ . '/../../views/' . $view . '.php';
+
+    if (!is_file($path)) {
+        http_response_code(500);
+        echo 'view not found: ' . h($path);
+        return;
+    }
+
+    require $path;
 }

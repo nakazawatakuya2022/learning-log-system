@@ -1,10 +1,12 @@
 <?php declare(strict_types=1); ?>
+<!-- HEADER_LOADED -->
 <!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Learning Logs</title>
+  <title><?= h((string)($page_title ?? 'Learning Logs')) ?></title>
+  <?php require __DIR__ . '/assets.php'; ?>
 </head>
-<body>
-<main style="max-width: 900px; margin: 24px auto; padding: 0 12px;">
+<body class="<?= h((string)($body_class ?? '')) ?>">
+<main class="wrap">

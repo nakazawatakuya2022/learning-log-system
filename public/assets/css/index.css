@@ -1,0 +1,85 @@
+/* index.css: indexページ固有（必ず page-index スコープで書く） */
+
+.page-index .section { margin-top: 18px; }
+
+/* Filters */
+.page-index .filters {
+  max-width: 900px;
+  padding: 12px;
+  border: 1px solid #111;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.page-index .filters-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.page-index .filters-row.small {
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.page-index .check {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.page-index .check label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* List (table-like) */
+.page-index .list { max-width: 900px; }
+
+.page-index .row {
+  display: grid;
+  grid-template-columns: 120px 90px 120px 160px 1fr;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #111;
+  align-items: baseline;
+}
+
+.page-index .head { font-weight: 600; font-size: 13px; }
+.page-index .meta { font-size: 13px; white-space: nowrap; }
+.page-index .title { font-size: 14px; font-weight: 600; }
+
+/* Status badges */
+.page-index .badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.page-index .badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid #111;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.4;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.page-index .badge.resolved { background: #111; color: #fff; }
+.page-index .badge.unresolved { background: #fff; color: #111; }
+.page-index .badge.knowledge { background: #f5f5f5; color: #111; }
+
+/* Responsive */
+@media (max-width: 760px) {
+  .page-index .filters-row { grid-template-columns: 1fr 1fr; }
+  .page-index .row { grid-template-columns: 1fr; }
+  .page-index .head { display: none; }
+}

@@ -1,0 +1,81 @@
+/* detail.css: detailページ固有（必ず page-detail スコープで書く） */
+
+.page-detail .wrap { max-width: 820px; } /* baseの980をdetailだけ上書き */
+
+.page-detail .back {
+  font-size: 14px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.page-detail h1 {
+  font-size: 22px;
+  margin: 0 0 4px;
+}
+
+.page-detail .meta {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.page-detail .updated {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.page-detail .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* detail側の row（indexの row と衝突するので必ずスコープ） */
+.page-detail .row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.page-detail .label { font-size: 13px; color: #333; }
+
+.page-detail .box {
+  border: 1px solid #111;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+.page-detail .toggle {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.page-detail .toggle input { width: 18px; height: 18px; }
+
+.page-detail .actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* detailのボタンは .btn を使う前提でもいいが、既存が buttonならここで寄せる */
+.page-detail button {
+  padding: 8px 14px;
+  border: 1px solid #111;
+  border-radius: 6px;
+  background: #111;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.page-detail button.secondary { background: #fff; color: #111; }
+.page-detail button:active { transform: translateY(1px); }
