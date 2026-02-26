@@ -1,0 +1,8 @@
+# .env / src / views への直アクセスを禁止
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^\.env$ - [F,L]
+    RewriteRule ^src(/|$) - [F,L]
+    RewriteRule ^views(/|$) - [F,L]
+</IfModule>
