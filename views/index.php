@@ -2,19 +2,28 @@
 declare(strict_types=1);
 
 /**
+ * src/views/index.php
+ *
  * 期待する変数（renderから渡される想定）
- * - $logs   : array
- * - $errors : array|null
- * - $old    : array|null（POST失敗時のフォーム復元）
+ * - $logs        : array
+ * - $errors      : array|null
+ * - $old         : array|null（POST失敗時のNew Logフォーム復元）
+ * - $cond        : array|null（GET検索フォーム復元）
+ * - $page        : int|null
+ * - $total_pages : int|null
  */
+
 $page_title = 'Logs';
 $body_class = 'page-index';
 $page_css   = 'index.css';
 $page_js    = null;
 
-$logs = $logs ?? [];
-$errors = $errors ?? [];
-$old = $old ?? [];
+$logs        = $logs ?? [];
+$errors      = $errors ?? [];
+$old         = $old ?? [];
+$cond        = $cond ?? ['language' => '', 'level' => '', 'status' => ''];
+$page        = (int)($page ?? 1);
+$total_pages = (int)($total_pages ?? 1);
 
 require __DIR__ . '/../src/components/header.php';
 require __DIR__ . '/../src/components/messages.php';
@@ -25,6 +34,17 @@ $levels = ['NOTE', 'QUESTION', 'IMPORTANT'];
 
 $old_lang  = (string)($old['language'] ?? 'PHP');
 $old_level = (string)($old['level'] ?? 'NOTE');
+
+// ページャURL生成：condだけを使う（不要なGETが混ざらない）
+$build_page_url = function(int $p) use ($cond): string {
+    $q = [
+        'language' => (string)($cond['language'] ?? ''),
+        'level'    => (string)($cond['level'] ?? ''),
+        'status'   => (string)($cond['status'] ?? ''),
+        'page'     => (string)$p,
+    ];
+    return './index.php?' . http_build_query($q);
+};
 ?>
   <div class="rule"></div>
   <h1>Logs</h1>
@@ -89,7 +109,6 @@ $old_level = (string)($old['level'] ?? 'NOTE');
         ><?= h((string)($old['message'] ?? '')) ?></textarea>
       </label>
 
-      <!-- 仕様に合わせて残す（不要ならこのlabelごと削除OK） -->
       <label>
         Solution <span class="req">optional</span>
         <textarea
@@ -119,26 +138,18 @@ $old_level = (string)($old['level'] ?? 'NOTE');
   <section class="section">
     <h2>[ Logs List ]</h2>
 
-    <!-- Filters (UI only / 後でGET検索実装) -->
+    <!-- Filters (GET search) -->
     <form class="filters" action="./index.php" method="get">
+      <!-- 検索したら常に1ページ目に戻す -->
+      <input type="hidden" name="page" value="1">
+
       <div class="filters-row">
         <label>
-          From
-          <input type="date" name="from" value="<?= h((string)($_GET['from'] ?? '')) ?>">
-        </label>
-
-        <label>
-          To
-          <input type="date" name="to" value="<?= h((string)($_GET['to'] ?? '')) ?>">
-        </label>
-
-        <label>
           Language
-          <?php $glang = (string)($_GET['language'] ?? ''); ?>
           <select name="language">
-            <option value="" <?= $glang === '' ? 'selected' : '' ?>>All</option>
+            <option value="" <?= (($cond['language'] ?? '') === '') ? 'selected' : '' ?>>All</option>
             <?php foreach ($langs as $v): ?>
-              <option value="<?= h($v) ?>" <?= $glang === $v ? 'selected' : '' ?>>
+              <option value="<?= h($v) ?>" <?= (($cond['language'] ?? '') === $v) ? 'selected' : '' ?>>
                 <?= h($v) ?>
               </option>
             <?php endforeach; ?>
@@ -147,31 +158,43 @@ $old_level = (string)($old['level'] ?? 'NOTE');
 
         <label>
           Level
-          <?php $glevel = (string)($_GET['level'] ?? ''); ?>
           <select name="level">
-            <option value="" <?= $glevel === '' ? 'selected' : '' ?>>All</option>
+            <option value="" <?= (($cond['level'] ?? '') === '') ? 'selected' : '' ?>>All</option>
             <?php foreach ($levels as $v): ?>
-              <option value="<?= h($v) ?>" <?= $glevel === $v ? 'selected' : '' ?>>
+              <option value="<?= h($v) ?>" <?= (($cond['level'] ?? '') === $v) ? 'selected' : '' ?>>
                 <?= h($v) ?>
               </option>
             <?php endforeach; ?>
           </select>
         </label>
-      </div>
 
-      <div class="filters-row small">
-        <div class="check">
-          <label><input type="checkbox" name="unresolved" <?= isset($_GET['unresolved']) ? 'checked' : '' ?>> 未解決</label>
-          <label><input type="checkbox" name="resolved" <?= isset($_GET['resolved']) ? 'checked' : '' ?>> 解決済</label>
-          <label><input type="checkbox" name="knowledge" <?= isset($_GET['knowledge']) ? 'checked' : '' ?>> ナレッジ</label>
-        </div>
+        <label>
+          Status
+          <select name="status">
+            <option value=""          <?= (($cond['status'] ?? '') === '') ? 'selected' : '' ?>>All</option>
+            <option value="unresolved"<?= (($cond['status'] ?? '') === 'unresolved') ? 'selected' : '' ?>>未解決</option>
+            <option value="resolved"  <?= (($cond['status'] ?? '') === 'resolved') ? 'selected' : '' ?>>解決済</option>
+            <option value="knowledge" <?= (($cond['status'] ?? '') === 'knowledge') ? 'selected' : '' ?>>ナレッジ</option>
+          </select>
+        </label>
 
-        <div style="display:flex; gap:10px; justify-content:flex-end">
-          <button class="btn secondary" type="reset">Reset</button>
+        <div style="display:flex; gap:10px; justify-content:flex-end; align-items:flex-end;">
+          <a class="btn secondary" href="./index.php">Reset</a>
           <button class="btn" type="submit">Search</button>
         </div>
       </div>
     </form>
+
+    <!-- Pager -->
+    <div class="pager" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; margin: 10px 0;">
+      <?php if ($page > 1): ?>
+        <a class="btn secondary" href="<?= h($build_page_url($page - 1)) ?>">Prev</a>
+      <?php endif; ?>
+      <span><?= h((string)$page) ?> / <?= h((string)$total_pages) ?></span>
+      <?php if ($page < $total_pages): ?>
+        <a class="btn secondary" href="<?= h($build_page_url($page + 1)) ?>">Next</a>
+      <?php endif; ?>
+    </div>
 
     <!-- List header -->
     <div class="row head">
@@ -197,13 +220,12 @@ $old_level = (string)($old['level'] ?? 'NOTE');
             <div class="meta"><?= h((string)($row['level'] ?? '')) ?></div>
 
             <div class="badges">
-              <?php if (!$is_resolved): ?>
+              <?php if ($is_knowledge): ?>
+                <span class="badge knowledge">ナレッジ</span>
+              <?php elseif (!$is_resolved): ?>
                 <span class="badge unresolved">未解決</span>
               <?php else: ?>
                 <span class="badge resolved">解決済</span>
-              <?php endif; ?>
-              <?php if ($is_knowledge): ?>
-                <span class="badge knowledge">ナレッジ</span>
               <?php endif; ?>
             </div>
 
@@ -214,6 +236,17 @@ $old_level = (string)($old['level'] ?? 'NOTE');
             </div>
           </div>
         <?php endforeach; ?>
+      <?php endif; ?>
+    </div>
+
+    <!-- Pager (bottom) -->
+    <div class="pager" style="display:flex; gap:12px; align-items:center; justify-content:flex-end; margin: 10px 0;">
+      <?php if ($page > 1): ?>
+        <a class="btn secondary" href="<?= h($build_page_url($page - 1)) ?>">Prev</a>
+      <?php endif; ?>
+      <span><?= h((string)$page) ?> / <?= h((string)$total_pages) ?></span>
+      <?php if ($page < $total_pages): ?>
+        <a class="btn secondary" href="<?= h($build_page_url($page + 1)) ?>">Next</a>
       <?php endif; ?>
     </div>
   </section>

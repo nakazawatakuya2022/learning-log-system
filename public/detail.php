@@ -24,6 +24,7 @@ try {
         }
 
         // 入力の正規化 + バリデーション（更新用）
+        // ※ detailの編集フォームには language/level が無いので、ここで取れても空になる
         $input  = log_input_from_post($_POST);
         $errors = validate_log_update($input);
 
@@ -41,15 +42,15 @@ try {
             exit;
         }
 
-        // UPDATE（occurred_at は更新対象にしない前提）
+        // UPDATE（occurred_at は更新対象にしない / language・level も更新対象外に固定）
         logs_update($id, [
-            'language'     => $input['language'],
-            'level'        => $input['level'],
-            'title'        => $input['title'],
-            'message'      => $input['message'],
-            'solution'     => $input['solution'],
-            'is_resolved'  => $input['is_resolved'],
-            'is_knowledge' => $input['is_knowledge'],
+            'language'     => (string)$current['language'], // ★保持
+            'level'        => (string)$current['level'],    // ★保持
+            'title'        => (string)$input['title'],
+            'message'      => (string)$input['message'],
+            'solution'     => $input['solution'],           // null or string
+            'is_resolved'  => (int)$input['is_resolved'],
+            'is_knowledge' => (int)$input['is_knowledge'],
         ]);
 
         redirect("./detail.php?id={$id}"); // PRG
@@ -71,6 +72,5 @@ try {
 
 } catch (Throwable $e) {
     http_response_code(500);
-    // detail画面側で共通メッセージを出せるならこちらが自然
     render('detail', ['errors' => ['E_SYSTEM'], 'log' => [], 'mode' => 'view']);
 }
